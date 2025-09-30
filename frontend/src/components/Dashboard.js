@@ -9,6 +9,7 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 const Dashboard = ({ players, tournaments, matches, refreshData }) => {
+  const navigate = useNavigate();
   const [ranking, setRanking] = useState([]);
   const [overallStats, setOverallStats] = useState({});
   const [surfaceStats, setSurfaceStats] = useState({});
