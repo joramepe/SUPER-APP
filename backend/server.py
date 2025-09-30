@@ -596,12 +596,15 @@ async def get_match_records():
             "date": tournament["tournament_date"] if tournament else None
         }
     
-    records["biggest_beatdown"] = {
-        **format_match_info(biggest_beatdown["match"]) if biggest_beatdown else {},
-        "winner_games": biggest_beatdown["winner_games"] if biggest_beatdown else 0,
-        "loser_games": biggest_beatdown["loser_games"] if biggest_beatdown else 0,
-        "games_differential": biggest_beatdown["winner_games"] - biggest_beatdown["loser_games"] if biggest_beatdown else 0
-    } if biggest_beatdown else None
+    if biggest_beatdown:
+        records["biggest_beatdown"] = {
+            **format_match_info(biggest_beatdown["match"]),
+            "winner_games": biggest_beatdown["winner_games"],
+            "loser_games": biggest_beatdown["loser_games"],
+            "games_differential": biggest_beatdown["winner_games"] - biggest_beatdown["loser_games"]
+        }
+    else:
+        records["biggest_beatdown"] = None
     
     records["longest_match"] = format_match_info(longest_match) if longest_match else None
     
