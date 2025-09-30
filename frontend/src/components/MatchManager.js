@@ -587,7 +587,7 @@ const MatchManager = ({ matches, tournaments, players, refreshData }) => {
                         <div className={`w-3 h-3 rounded-full ${getSurfaceColor(match.tournament_id)}`}></div>
                       </div>
                       <div className="text-sm text-gray-500 mb-3">
-                        {new Date(match.match_date).toLocaleDateString('es-ES')}
+                        Registrado: {new Date(match.created_at).toLocaleDateString('es-ES')}
                       </div>
                       
                       {/* Players and Score */}
