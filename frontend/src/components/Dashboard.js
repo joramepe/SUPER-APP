@@ -304,6 +304,22 @@ const Dashboard = ({ players, tournaments, matches, refreshData }) => {
                             won={stats.sets_won}
                             percentage={stats.sets_won_percentage}
                           />
+                          
+                          {/* Duration info for this surface */}
+                          <div className="mt-3 pt-2 border-t border-gray-200">
+                            <div className="flex justify-between text-xs">
+                              <span className="text-gray-600">Tiempo total:</span>
+                              <span className="font-medium">{stats.total_duration_hours || 0}h</span>
+                            </div>
+                            <div className="flex justify-between text-xs">
+                              <span className="text-gray-600">Promedio/partido:</span>
+                              <span className="font-medium">{stats.average_match_duration_minutes || 0}min</span>
+                            </div>
+                            <div className="flex justify-between text-xs">
+                              <span className="text-gray-600">Sets/partido:</span>
+                              <span className="font-medium">{stats.average_sets_per_match || 0}</span>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     ))}
