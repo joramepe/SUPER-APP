@@ -32,7 +32,6 @@ const MatchManager = ({ matches, tournaments, players, refreshData }) => {
       player1_id: '',
       player2_id: '',
       winner_id: '',
-      match_date: '',
       sets: []
     });
   };
