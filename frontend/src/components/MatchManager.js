@@ -105,6 +105,19 @@ const MatchManager = ({ matches, tournaments, players, refreshData }) => {
     });
   };
 
+  const isDecisiveSet = (setIndex) => {
+    const tournament = tournaments.find(t => t.id === formData.tournament_id);
+    if (!tournament) return false;
+    
+    // Para Grand Slam (mejor de 5): set decisivo es el 5to (índice 4)
+    if (tournament.is_best_of_five) {
+      return setIndex === 4; // 5to set
+    } else {
+      // Para el resto (mejor de 3): set decisivo es el 3ro (índice 2)
+      return setIndex === 2; // 3er set
+    }
+  };
+
   const validateMatch = () => {
     if (!formData.tournament_id || !formData.player1_id || !formData.player2_id || 
         !formData.winner_id) {
