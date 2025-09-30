@@ -252,6 +252,7 @@ async def get_overall_stats(player_id: str):
     
     total_matches = len(matches)
     matches_won = len([m for m in matches if m["winner_id"] == player_id])
+    total_duration = sum([m.get("duration_minutes", 0) for m in matches])
     
     total_sets_won = 0
     total_sets_played = 0
@@ -316,7 +317,10 @@ async def get_overall_stats(player_id: str):
         "tiebreaks_won_percentage": round((total_tiebreaks_won / total_tiebreaks_played * 100) if total_tiebreaks_played > 0 else 0, 2),
         "supertiebreaks_played": total_supertiebreaks_played,
         "supertiebreaks_won": total_supertiebreaks_won,
-        "supertiebreaks_won_percentage": round((total_supertiebreaks_won / total_supertiebreaks_played * 100) if total_supertiebreaks_played > 0 else 0, 2)
+        "supertiebreaks_won_percentage": round((total_supertiebreaks_won / total_supertiebreaks_played * 100) if total_supertiebreaks_played > 0 else 0, 2),
+        "total_duration_minutes": total_duration,
+        "total_duration_hours": round(total_duration / 60, 2),
+        "average_match_duration_minutes": round(total_duration / total_matches) if total_matches > 0 else 0
     }
 
 @api_router.get("/stats/surface/{player_id}")
