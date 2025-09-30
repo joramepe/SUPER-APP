@@ -423,7 +423,7 @@ const MatchManager = ({ matches, tournaments, players, refreshData }) => {
                         )}
                       </div>
 
-                      <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         {/* Games */}
                         <div>
                           <Label htmlFor={`set${index}P1Games`}>Juegos J1</Label>
@@ -452,61 +452,68 @@ const MatchManager = ({ matches, tournaments, players, refreshData }) => {
                           />
                         </div>
 
-                        {/* Tiebreak */}
-                        <div>
-                          <Label htmlFor={`set${index}P1TB`}>TB J1</Label>
-                          <Input
-                            id={`set${index}P1TB`}
-                            data-testid={`set-${index}-p1-tiebreak`}
-                            type="number"
-                            min="0"
-                            value={set.tiebreak_p1 || ''}
-                            onChange={(e) => updateSet(index, 'tiebreak_p1', e.target.value)}
-                            className="focus-ring"
-                            placeholder="7"
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor={`set${index}P2TB`}>TB J2</Label>
-                          <Input
-                            id={`set${index}P2TB`}
-                            data-testid={`set-${index}-p2-tiebreak`}
-                            type="number"
-                            min="0"
-                            value={set.tiebreak_p2 || ''}
-                            onChange={(e) => updateSet(index, 'tiebreak_p2', e.target.value)}
-                            className="focus-ring"
-                            placeholder="5"
-                          />
-                        </div>
-
-                        {/* Supertiebreak */}
-                        <div>
-                          <Label htmlFor={`set${index}P1STB`}>STB J1</Label>
-                          <Input
-                            id={`set${index}P1STB`}
-                            data-testid={`set-${index}-p1-supertiebreak`}
-                            type="number"
-                            min="0"
-                            value={set.supertiebreak_p1 || ''}
-                            onChange={(e) => updateSet(index, 'supertiebreak_p1', e.target.value)}
-                            className="focus-ring"
-                            placeholder="10"
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor={`set${index}P2STB`}>STB J2</Label>
-                          <Input
-                            id={`set${index}P2STB`}
-                            data-testid={`set-${index}-p2-supertiebreak`}
-                            type="number"
-                            min="0"
-                            value={set.supertiebreak_p2 || ''}
-                            onChange={(e) => updateSet(index, 'supertiebreak_p2', e.target.value)}
-                            className="focus-ring"
-                            placeholder="8"
-                          />
-                        </div>
+                        {/* Tiebreak o Supertiebreak según corresponda */}
+                        {isDecisiveSet(index) ? (
+                          // Supertiebreak para set decisivo
+                          <>
+                            <div>
+                              <Label htmlFor={`set${index}P1STB`}>SuperTB J1</Label>
+                              <Input
+                                id={`set${index}P1STB`}
+                                data-testid={`set-${index}-p1-supertiebreak`}
+                                type="number"
+                                min="0"
+                                value={set.supertiebreak_p1 || ''}
+                                onChange={(e) => updateSet(index, 'supertiebreak_p1', e.target.value)}
+                                className="focus-ring"
+                                placeholder="10"
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor={`set${index}P2STB`}>SuperTB J2</Label>
+                              <Input
+                                id={`set${index}P2STB`}
+                                data-testid={`set-${index}-p2-supertiebreak`}
+                                type="number"
+                                min="0"
+                                value={set.supertiebreak_p2 || ''}
+                                onChange={(e) => updateSet(index, 'supertiebreak_p2', e.target.value)}
+                                className="focus-ring"
+                                placeholder="8"
+                              />
+                            </div>
+                          </>
+                        ) : (
+                          // Tiebreak normal para sets normales
+                          <>
+                            <div>
+                              <Label htmlFor={`set${index}P1TB`}>Tiebreak J1</Label>
+                              <Input
+                                id={`set${index}P1TB`}
+                                data-testid={`set-${index}-p1-tiebreak`}
+                                type="number"
+                                min="0"
+                                value={set.tiebreak_p1 || ''}
+                                onChange={(e) => updateSet(index, 'tiebreak_p1', e.target.value)}
+                                className="focus-ring"
+                                placeholder="7"
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor={`set${index}P2TB`}>Tiebreak J2</Label>
+                              <Input
+                                id={`set${index}P2TB`}
+                                data-testid={`set-${index}-p2-tiebreak`}
+                                type="number"
+                                min="0"
+                                value={set.tiebreak_p2 || ''}
+                                onChange={(e) => updateSet(index, 'tiebreak_p2', e.target.value)}
+                                className="focus-ring"
+                                placeholder="5"
+                              />
+                            </div>
+                          </>
+                        )}
                       </div>
                     </Card>
                   ))}
