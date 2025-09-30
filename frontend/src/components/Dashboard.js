@@ -23,6 +23,7 @@ const Dashboard = ({ players, tournaments, matches, refreshData }) => {
       setSelectedPlayer(players[0]);
       fetchRanking();
       fetchRecords();
+      fetchWeeksAtNumber1();
     }
   }, [players]);
 
