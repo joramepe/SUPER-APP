@@ -389,6 +389,17 @@ async def get_surface_stats(player_id: str):
     
     return surface_stats
 
+@api_router.delete("/cleanup")
+async def cleanup_database():
+    """Clean up all test data from database"""
+    try:
+        await db.players.delete_many({})
+        await db.tournaments.delete_many({})
+        await db.matches.delete_many({})
+        return {"message": "Base de datos limpiada correctamente"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 @api_router.get("/ranking")
 async def get_current_ranking():
     # Get all players
