@@ -402,7 +402,41 @@ async def get_surface_stats(player_id: str):
     
     return surface_stats
 
-@api_router.delete("/cleanup")
+@api_router.get("/davis-cup/winner/{player_id}")
+async def get_davis_cup_wins(player_id: str):
+    # Get all Davis Cup matches for this player
+    davis_tournaments = await db.tournaments.find({"category": "Copa Davis"}).to_list(1000)
+    davis_tournament_ids = [t["id"] for t in davis_tournaments]
+    
+    davis_matches = await db.matches.find({
+        "tournament_id": {"$in": davis_tournament_ids},
+        "$or": [{"player1_id": player_id}, {"player2_id": player_id}]
+    }).to_list(1000)
+    
+    # Group matches by tournament to count wins per Davis Cup
+    davis_cups = {}
+    for match in davis_matches:
+        tournament_id = match["tournament_id"]
+        if tournament_id not in davis_cups:
+            davis_cups[tournament_id] = {"wins": 0, "total": 0}
+        
+        davis_cups[tournament_id]["total"] += 1
+        if match["winner_id"] == player_id:
+            davis_cups[tournament_id]["wins"] += 1
+    
+    # Count how many Davis Cups this player won (won 2 out of 3 matches)
+    davis_cup_victories = 0
+    for tournament_id, stats in davis_cups.items():
+        if stats["wins"] >= 2:  # Won at least 2 out of 3 matches
+            davis_cup_victories += 1
+    
+    return {
+        "player_id": player_id,
+        "davis_cup_victories": davis_cup_victories,
+        "has_davis_cup_badge": davis_cup_victories > 0
+    }
+
+@api_router.get("/cleanup")
 async def cleanup_database():
     """Clean up all test data from database"""
     try:
