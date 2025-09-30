@@ -228,7 +228,7 @@ const Dashboard = ({ players, tournaments, matches, refreshData }) => {
                     <Zap className="w-5 h-5 text-emerald-600" />
                     <span>Estadísticas Generales</span>
                   </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                     <StatBar
                       label="Partidos"
                       played={overallStats.matches_played}
@@ -253,6 +253,31 @@ const Dashboard = ({ players, tournaments, matches, refreshData }) => {
                       won={overallStats.supertiebreaks_won}
                       percentage={overallStats.supertiebreaks_won_percentage}
                     />
+                  </div>
+
+                  {/* Duration Stats */}
+                  <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-lg p-4 border border-blue-100">
+                    <h4 className="font-medium text-gray-900 mb-3">Tiempo en Pista</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-blue-600">
+                          {overallStats.total_duration_hours || 0}h
+                        </div>
+                        <div className="text-sm text-gray-600">Total jugado</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-cyan-600">
+                          {overallStats.average_match_duration_minutes || 0}min
+                        </div>
+                        <div className="text-sm text-gray-600">Promedio por partido</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-teal-600">
+                          {overallStats.total_duration_minutes || 0}min
+                        </div>
+                        <div className="text-sm text-gray-600">Total en minutos</div>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
