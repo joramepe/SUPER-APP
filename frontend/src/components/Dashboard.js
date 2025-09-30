@@ -188,35 +188,89 @@ const Dashboard = ({ players, tournaments, matches, refreshData }) => {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {ranking.map((player, index) => (
-                <div
-                  key={player.player_id}
-                  data-testid={`ranking-player-${index + 1}`}
-                  className={`flex items-center justify-between p-3 rounded-lg ${
-                    index === 0 
-                      ? 'bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200' 
-                      : 'bg-gray-50'
-                  }`}
-                >
-                  <div className="flex items-center space-x-3">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
-                      index === 0 ? 'bg-yellow-500 text-white' : 'bg-gray-300 text-gray-700'
-                    }`}>
-                      {player.position}
-                    </div>
-                    <div>
-                      <div className="flex items-center space-x-2">
-                        <div className="font-medium text-gray-900">{player.player_name}</div>
-                        {davisCupStats.player_id === player.player_id && davisCupStats.has_davis_cup_badge && (
-                          <span className="text-lg" title="Campeón Copa Davis">🏆</span>
-                        )}
+              {/* Current Ranking */}
+              <div>
+                <h4 className="text-sm font-semibold text-gray-700 mb-3">Puntos Actuales</h4>
+                {ranking.map((player, index) => (
+                  <div
+                    key={player.player_id}
+                    data-testid={`ranking-player-${index + 1}`}
+                    className={`flex items-center justify-between p-3 rounded-lg mb-2 ${
+                      index === 0 
+                        ? 'bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200' 
+                        : 'bg-gray-50'
+                    }`}
+                  >
+                    <div className="flex items-center space-x-3">
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
+                        index === 0 ? 'bg-yellow-500 text-white' : 'bg-gray-300 text-gray-700'
+                      }`}>
+                        {player.position}
                       </div>
-                      <div className="text-sm text-gray-500">{player.points} puntos</div>
+                      <div>
+                        <div className="flex items-center space-x-2">
+                          <div className="font-medium text-gray-900">{player.player_name}</div>
+                          {davisCupStats.player_id === player.player_id && davisCupStats.has_davis_cup_badge && (
+                            <span className="text-lg" title="Campeón Copa Davis">🏆</span>
+                          )}
+                        </div>
+                        <div className="text-sm text-gray-500">{player.points} puntos</div>
+                      </div>
                     </div>
+                    {index === 0 && <Medal className="w-5 h-5 text-yellow-600" />}
                   </div>
-                  {index === 0 && <Medal className="w-5 h-5 text-yellow-600" />}
+                ))}
+              </div>
+
+              {/* Weeks at Number 1 */}
+              {weeksAtNumber1.total_weeks && Object.keys(weeksAtNumber1.total_weeks).length > 0 && (
+                <div className="border-t pt-4">
+                  <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center">
+                    <span className="mr-2">⏰</span>
+                    Semanas como #1
+                  </h4>
+                  <div className="space-y-2">
+                    {Object.entries(weeksAtNumber1.total_weeks)
+                      .sort((a, b) => b[1].weeks - a[1].weeks)
+                      .map(([playerName, data]) => (
+                        <div 
+                          key={playerName} 
+                          className={`flex items-center justify-between p-2 rounded-lg ${
+                            data.weeks > 0 ? 'bg-blue-50' : 'bg-gray-50'
+                          }`}
+                        >
+                          <span className="font-medium text-sm text-gray-800">{playerName}</span>
+                          <div className="text-right">
+                            <div className="font-bold text-blue-600">{data.weeks}</div>
+                            <div className="text-xs text-gray-500">{data.percentage}%</div>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+
+                  {/* Timeline breakdown */}
+                  {weeksAtNumber1.weeks_breakdown && weeksAtNumber1.weeks_breakdown.length > 0 && (
+                    <div className="mt-4">
+                      <h5 className="text-xs font-semibold text-gray-600 mb-2">Evolución del Ranking:</h5>
+                      <div className="space-y-1 max-h-32 overflow-y-auto">
+                        {weeksAtNumber1.weeks_breakdown.map((period, index) => (
+                          <div key={index} className="text-xs p-2 bg-gray-50 rounded">
+                            <div className="font-medium text-gray-800">
+                              {period.leader_name} #{1}
+                            </div>
+                            <div className="text-gray-600">
+                              {period.weeks} semanas
+                            </div>
+                            <div className="text-gray-500">
+                              Tras {period.after_tournament}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
-              ))}
+              )}
             </div>
           </CardContent>
         </Card>
