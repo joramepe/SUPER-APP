@@ -147,7 +147,16 @@ async def get_players():
 async def create_tournament(input: TournamentCreate):
     tournament_dict = input.dict()
     tournament_dict['points'] = TOURNAMENT_POINTS[input.category]
-    tournament_dict['is_best_of_five'] = BEST_OF_FIVE[input.category]
+    
+    # Handle Copa Davis special logic
+    if input.category == TournamentCategory.COPA_DAVIS:
+        if input.davis_cup_match_number == 3:  # Decisive match
+            tournament_dict['is_best_of_five'] = True
+        else:  # Matches 1 and 2
+            tournament_dict['is_best_of_five'] = False
+    else:
+        tournament_dict['is_best_of_five'] = BEST_OF_FIVE[input.category]
+    
     tournament_obj = Tournament(**tournament_dict)
     await db.tournaments.insert_one(prepare_for_mongo(tournament_obj.dict()))
     return tournament_obj
