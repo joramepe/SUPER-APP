@@ -104,7 +104,6 @@ class Match(BaseModel):
     player2_id: str
     winner_id: str
     sets: List[SetResult]
-    match_date: date
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class MatchCreate(BaseModel):
@@ -113,7 +112,6 @@ class MatchCreate(BaseModel):
     player2_id: str
     winner_id: str
     sets: List[SetResult]
-    match_date: date
 
 # Tournament points mapping
 TOURNAMENT_POINTS = {
