@@ -413,6 +413,59 @@ async def get_surface_stats(player_id: str):
     
     return surface_stats
 
+@api_router.get("/stats/tournament-category/{player_id}")
+async def get_tournament_category_stats(player_id: str):
+    # Get all matches for player
+    matches = await db.matches.find({"$or": [{"player1_id": player_id}, {"player2_id": player_id}]}).to_list(1000)
+    
+    # Get tournaments to get category info
+    tournament_ids = [m["tournament_id"] for m in matches]
+    tournaments = await db.tournaments.find({"id": {"$in": tournament_ids}}).to_list(1000)
+    tournament_categories = {t["id"]: t["category"] for t in tournaments}
+    
+    category_stats = {}
+    
+    for category in TournamentCategory:
+        category_matches = [m for m in matches if tournament_categories.get(m["tournament_id"]) == category.value]
+        
+        total_matches = len(category_matches)
+        matches_won = len([m for m in category_matches if m["winner_id"] == player_id])
+        total_category_duration = sum([m.get("duration_minutes", 0) for m in category_matches])
+        
+        total_sets_won = 0
+        total_sets_played = 0
+        
+        for match in category_matches:
+            for set_result in match["sets"]:
+                total_sets_played += 1
+                
+                p1_games = set_result["player1_games"]
+                p2_games = set_result["player2_games"]
+                
+                if p1_games > p2_games:
+                    set_winner = match["player1_id"]
+                else:
+                    set_winner = match["player2_id"]
+                
+                if set_winner == player_id:
+                    total_sets_won += 1
+        
+        category_stats[category.value] = {
+            "matches_played": total_matches,
+            "matches_won": matches_won,
+            "matches_won_percentage": round((matches_won / total_matches * 100) if total_matches > 0 else 0, 2),
+            "sets_played": total_sets_played,
+            "sets_won": total_sets_won,
+            "sets_won_percentage": round((total_sets_won / total_sets_played * 100) if total_sets_played > 0 else 0, 2),
+            "total_duration_minutes": total_category_duration,
+            "total_duration_hours": round(total_category_duration / 60, 2),
+            "average_match_duration_minutes": round(total_category_duration / total_matches) if total_matches > 0 else 0,
+            "average_sets_per_match": round(total_sets_played / total_matches, 2) if total_matches > 0 else 0,
+            "average_minutes_per_set": round(total_category_duration / total_sets_played) if total_sets_played > 0 else 0
+        }
+    
+    return category_stats
+
 @api_router.get("/davis-cup/winner/{player_id}")
 async def get_davis_cup_wins(player_id: str):
     # Get all Davis Cup matches for this player
