@@ -44,8 +44,6 @@ def prepare_for_mongo(data):
     if isinstance(data, dict):
         if 'tournament_date' in data and isinstance(data['tournament_date'], date):
             data['tournament_date'] = data['tournament_date'].isoformat()
-        if 'match_date' in data and isinstance(data['match_date'], date):
-            data['match_date'] = data['match_date'].isoformat()
         if 'created_at' in data and isinstance(data['created_at'], datetime):
             data['created_at'] = data['created_at'].isoformat()
     return data
@@ -54,8 +52,6 @@ def parse_from_mongo(item):
     if isinstance(item, dict):
         if 'tournament_date' in item and isinstance(item['tournament_date'], str):
             item['tournament_date'] = datetime.fromisoformat(item['tournament_date']).date()
-        if 'match_date' in item and isinstance(item['match_date'], str):
-            item['match_date'] = datetime.fromisoformat(item['match_date']).date()
         if 'created_at' in item and isinstance(item['created_at'], str):
             item['created_at'] = datetime.fromisoformat(item['created_at'])
     return item
