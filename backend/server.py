@@ -413,6 +413,118 @@ async def get_surface_stats(player_id: str):
     
     return surface_stats
 
+@api_router.get("/ranking/weeks-at-number-1")
+async def get_weeks_at_number_1():
+    # Get all tournaments and matches
+    tournaments = await db.tournaments.find().to_list(1000)
+    matches = await db.matches.find().to_list(1000)
+    players = await db.players.find().to_list(1000)
+    
+    if not tournaments or not matches or not players:
+        return {"weeks_breakdown": [], "total_weeks": {}}
+    
+    # Create a map of tournament points
+    tournament_points = {t["id"]: t["points"] for t in tournaments}
+    tournament_dates = {t["id"]: t["tournament_date"] for t in tournaments}
+    tournament_names = {t["id"]: t["name"] for t in tournaments}
+    
+    # Get all tournaments with results (that have matches)
+    played_tournaments = []
+    for tournament in tournaments:
+        tournament_match = next((m for m in matches if m["tournament_id"] == tournament["id"]), None)
+        if tournament_match:
+            played_tournaments.append({
+                "id": tournament["id"],
+                "name": tournament["name"],
+                "date": tournament["tournament_date"],
+                "points": tournament["points"],
+                "winner_id": tournament_match["winner_id"]
+            })
+    
+    # Sort tournaments by date
+    played_tournaments.sort(key=lambda x: x["date"])
+    
+    # Calculate cumulative points and #1 status after each tournament
+    ranking_evolution = []
+    player_points = {p["id"]: 0 for p in players}
+    
+    for tournament in played_tournaments:
+        # Add points to winner
+        winner_id = tournament["winner_id"]
+        player_points[winner_id] += tournament["points"]
+        
+        # Determine current #1
+        current_leader = max(player_points.items(), key=lambda x: x[1])
+        current_leader_id = current_leader[0]
+        current_leader_points = current_leader[1]
+        
+        # Find player name
+        leader_name = next((p["name"] for p in players if p["id"] == current_leader_id), "Unknown")
+        
+        ranking_evolution.append({
+            "tournament_name": tournament["name"],
+            "date": tournament["date"],
+            "winner_id": winner_id,
+            "winner_name": next((p["name"] for p in players if p["id"] == winner_id), "Unknown"),
+            "points_awarded": tournament["points"],
+            "leader_id": current_leader_id,
+            "leader_name": leader_name,
+            "leader_points": current_leader_points,
+            "all_points": dict(player_points)
+        })
+    
+    # Calculate weeks at #1 between tournaments
+    weeks_breakdown = []
+    total_weeks = {p["id"]: 0 for p in players}
+    
+    for i in range(len(ranking_evolution)):
+        current = ranking_evolution[i]
+        
+        # Calculate weeks until next tournament (or end of year)
+        if i < len(ranking_evolution) - 1:
+            next_tournament = ranking_evolution[i + 1]
+            current_date = datetime.fromisoformat(current["date"])
+            next_date = datetime.fromisoformat(next_tournament["date"])
+            weeks_diff = (next_date - current_date).days / 7
+        else:
+            # For the last tournament, assume they stay #1 until end of year or a reasonable period
+            current_date = datetime.fromisoformat(current["date"])
+            end_of_year = datetime(current_date.year, 12, 31)
+            weeks_diff = (end_of_year - current_date).days / 7
+        
+        weeks_diff = max(0, round(weeks_diff))  # Ensure non-negative and round
+        
+        # Add weeks to current leader
+        leader_id = current["leader_id"]
+        total_weeks[leader_id] += weeks_diff
+        
+        weeks_breakdown.append({
+            "period_start": current["date"],
+            "period_end": next_tournament["date"] if i < len(ranking_evolution) - 1 else f"{current_date.year}-12-31",
+            "weeks": weeks_diff,
+            "leader_id": leader_id,
+            "leader_name": current["leader_name"],
+            "leader_points": current["leader_points"],
+            "after_tournament": current["tournament_name"],
+            "tournament_winner": current["winner_name"]
+        })
+    
+    # Format total weeks with player names
+    total_weeks_formatted = {}
+    for player in players:
+        player_id = player["id"]
+        total_weeks_formatted[player["name"]] = {
+            "player_id": player_id,
+            "weeks": total_weeks[player_id],
+            "percentage": round((total_weeks[player_id] / sum(total_weeks.values()) * 100) if sum(total_weeks.values()) > 0 else 0, 1)
+        }
+    
+    return {
+        "weeks_breakdown": weeks_breakdown,
+        "total_weeks": total_weeks_formatted,
+        "ranking_evolution": ranking_evolution
+    }
+
 @api_router.get("/stats/records")
 async def get_match_records():
     # Get all matches and tournaments
