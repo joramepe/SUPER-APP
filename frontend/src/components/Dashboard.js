@@ -176,7 +176,12 @@ const Dashboard = ({ players, tournaments, matches, refreshData }) => {
                       {player.position}
                     </div>
                     <div>
-                      <div className="font-medium text-gray-900">{player.player_name}</div>
+                      <div className="flex items-center space-x-2">
+                        <div className="font-medium text-gray-900">{player.player_name}</div>
+                        {davisCupStats.player_id === player.player_id && davisCupStats.has_davis_cup_badge && (
+                          <span className="text-lg" title="Campeón Copa Davis">🏆</span>
+                        )}
+                      </div>
                       <div className="text-sm text-gray-500">{player.points} puntos</div>
                     </div>
                   </div>
