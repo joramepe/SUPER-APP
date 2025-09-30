@@ -33,6 +33,7 @@ const MatchManager = ({ matches, tournaments, players, refreshData }) => {
       player1_id: '',
       player2_id: '',
       winner_id: '',
+      duration_minutes: '',
       sets: []
     });
   };
