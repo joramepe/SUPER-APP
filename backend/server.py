@@ -75,6 +75,7 @@ class Tournament(BaseModel):
     tournament_date: date
     points: int
     is_best_of_five: bool
+    davis_cup_match_number: Optional[int] = None  # 1, 2, or 3 for Davis Cup
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class TournamentCreate(BaseModel):
