@@ -86,6 +86,11 @@ const Dashboard = ({ players, tournaments, matches, refreshData }) => {
     return colors[category] || 'bg-gray-500';
   };
 
+  const getPlayerName = (playerId) => {
+    const player = players.find(p => p.id === playerId);
+    return player?.name || 'Desconocido';
+  };
+
   const StatCard = ({ title, value, subtitle, icon: Icon, color = "emerald" }) => (
     <Card className="card-hover">
       <CardContent className="p-6">
