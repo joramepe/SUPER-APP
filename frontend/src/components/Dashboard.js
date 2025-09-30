@@ -38,6 +38,15 @@ const Dashboard = ({ players, tournaments, matches, refreshData }) => {
     }
   };
 
+  const fetchRecords = async () => {
+    try {
+      const response = await axios.get(`${API}/stats/records`);
+      setRecords(response.data);
+    } catch (error) {
+      console.error('Error fetching records:', error);
+    }
+  };
+
   const fetchPlayerStats = async (playerId) => {
     try {
       const [overallRes, surfaceRes, davisRes] = await Promise.all([
