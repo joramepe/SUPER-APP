@@ -95,6 +95,14 @@ const MatchManager = ({ matches, tournaments, players, refreshData }) => {
     });
   };
 
+  const shouldShowTiebreak = (setIndex, set) => {
+    const p1Games = parseInt(set.player1_games) || 0;
+    const p2Games = parseInt(set.player2_games) || 0;
+    
+    // Only show tiebreak fields when score is 7-6 or 6-7
+    return (p1Games === 7 && p2Games === 6) || (p1Games === 6 && p2Games === 7);
+  };
+
   const updateSet = (index, field, value) => {
     const newSets = [...formData.sets];
     newSets[index] = {
