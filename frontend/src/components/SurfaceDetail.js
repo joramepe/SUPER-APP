@@ -86,13 +86,13 @@ const SurfaceDetail = ({ players, tournaments, matches }) => {
       let scoreStr = `${p1Games}-${p2Games}`;
       
       if (set.tiebreak_p1 !== null && set.tiebreak_p2 !== null) {
-        const winner_tb = set.tiebreak_p1 > set.tiebreak_p2 ? set.tiebreak_p1 : set.tiebreak_p2;
-        scoreStr += `(${winner_tb})`;
+        const loserPoints = Math.min(set.tiebreak_p1, set.tiebreak_p2);
+        scoreStr += `(${loserPoints})`;
       }
       
       if (set.supertiebreak_p1 !== null && set.supertiebreak_p2 !== null) {
-        const winner_stb = set.supertiebreak_p1 > set.supertiebreak_p2 ? set.supertiebreak_p1 : set.supertiebreak_p2;
-        scoreStr += `[${winner_stb}]`;
+        const loserPoints = Math.min(set.supertiebreak_p1, set.supertiebreak_p2);
+        scoreStr += `[${loserPoints}]`;
       }
       
       return scoreStr;
