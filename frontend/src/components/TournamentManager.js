@@ -37,7 +37,8 @@ const TournamentManager = ({ tournaments, refreshData }) => {
     surface: '',
     real_location: '',
     fictional_location: '',
-    tournament_date: ''
+    tournament_date: '',
+    davis_cup_match_number: null
   });
   const [loading, setLoading] = useState(false);
 
