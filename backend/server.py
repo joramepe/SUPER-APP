@@ -102,6 +102,7 @@ class Match(BaseModel):
     player2_id: str
     winner_id: str
     sets: List[SetResult]
+    duration_minutes: int  # Duration in minutes
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class MatchCreate(BaseModel):
@@ -110,6 +111,7 @@ class MatchCreate(BaseModel):
     player2_id: str
     winner_id: str
     sets: List[SetResult]
+    duration_minutes: int  # Duration in minutes
 
 # Tournament points mapping
 TOURNAMENT_POINTS = {
