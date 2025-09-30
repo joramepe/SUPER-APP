@@ -177,7 +177,15 @@ async def get_tournament(tournament_id: str):
 async def update_tournament(tournament_id: str, input: TournamentCreate):
     tournament_dict = input.dict()
     tournament_dict['points'] = TOURNAMENT_POINTS[input.category]
-    tournament_dict['is_best_of_five'] = BEST_OF_FIVE[input.category]
+    
+    # Handle Copa Davis special logic
+    if input.category == TournamentCategory.COPA_DAVIS:
+        if input.davis_cup_match_number == 3:  # Decisive match
+            tournament_dict['is_best_of_five'] = True
+        else:  # Matches 1 and 2
+            tournament_dict['is_best_of_five'] = False
+    else:
+        tournament_dict['is_best_of_five'] = BEST_OF_FIVE[input.category]
     
     result = await db.tournaments.update_one(
         {"id": tournament_id}, 
