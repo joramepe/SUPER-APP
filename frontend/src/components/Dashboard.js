@@ -38,13 +38,15 @@ const Dashboard = ({ players, tournaments, matches, refreshData }) => {
 
   const fetchPlayerStats = async (playerId) => {
     try {
-      const [overallRes, surfaceRes] = await Promise.all([
+      const [overallRes, surfaceRes, davisRes] = await Promise.all([
         axios.get(`${API}/stats/overall/${playerId}`),
-        axios.get(`${API}/stats/surface/${playerId}`)
+        axios.get(`${API}/stats/surface/${playerId}`),
+        axios.get(`${API}/davis-cup/winner/${playerId}`)
       ]);
       
       setOverallStats(overallRes.data);
       setSurfaceStats(surfaceRes.data);
+      setDavisCupStats(davisRes.data);
     } catch (error) {
       console.error('Error fetching player stats:', error);
     }
