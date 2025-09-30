@@ -51,13 +51,25 @@ const TournamentManager = ({ tournaments, refreshData }) => {
       return;
     }
 
+    // Validate Davis Cup match number
+    if (formData.category === 'Copa Davis' && !formData.davis_cup_match_number) {
+      toast.error('Selecciona el número de partido para Copa Davis');
+      return;
+    }
+
     setLoading(true);
     try {
+      const submitData = { ...formData };
+      // Only include davis_cup_match_number for Copa Davis
+      if (formData.category !== 'Copa Davis') {
+        delete submitData.davis_cup_match_number;
+      }
+
       if (editingTournament) {
-        await axios.put(`${API}/tournaments/${editingTournament.id}`, formData);
+        await axios.put(`${API}/tournaments/${editingTournament.id}`, submitData);
         toast.success('Torneo actualizado correctamente');
       } else {
-        await axios.post(`${API}/tournaments`, formData);
+        await axios.post(`${API}/tournaments`, submitData);
         toast.success('Torneo creado correctamente');
       }
       
