@@ -107,6 +107,26 @@ function App() {
                     />
                   } 
                 />
+                <Route 
+                  path="/superficie/:surface" 
+                  element={
+                    <SurfaceDetail 
+                      players={players}
+                      tournaments={tournaments}
+                      matches={matches}
+                    />
+                  } 
+                />
+                <Route 
+                  path="/partido/:matchId" 
+                  element={
+                    <MatchDetail 
+                      players={players}
+                      tournaments={tournaments}
+                      matches={matches}
+                    />
+                  } 
+                />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </div>
