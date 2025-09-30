@@ -403,9 +403,18 @@ const Dashboard = ({ players, tournaments, matches, refreshData }) => {
 
                     {/* Most Epic */}
                     {records.most_epic && (
-                      <div className="bg-purple-50 rounded-lg p-4 border border-purple-200">
+                      <div 
+                        className="bg-purple-50 rounded-lg p-4 border border-purple-200 cursor-pointer hover:bg-purple-100 transition-colors"
+                        onClick={() => {
+                          const match = matches.find(m => 
+                            m.tournament_id === tournaments.find(t => t.name === records.most_epic.tournament_name)?.id
+                          );
+                          if (match) navigate(`/partido/${match.id}`);
+                        }}
+                      >
                         <h4 className="font-medium text-purple-800 mb-2 flex items-center">
                           🔥 Partido Más Épico
+                          <span className="ml-2 text-xs">👆 Click para detalles</span>
                         </h4>
                         <div className="text-sm space-y-1">
                           <div className="font-semibold">{records.most_epic.winner_name} venció</div>
