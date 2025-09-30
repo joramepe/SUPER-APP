@@ -15,6 +15,7 @@ const Dashboard = ({ players, tournaments, matches, refreshData }) => {
   const [surfaceStats, setSurfaceStats] = useState({});
   const [davisCupStats, setDavisCupStats] = useState({});
   const [records, setRecords] = useState({});
+  const [weeksAtNumber1, setWeeksAtNumber1] = useState({});
   const [selectedPlayer, setSelectedPlayer] = useState(null);
 
   useEffect(() => {
