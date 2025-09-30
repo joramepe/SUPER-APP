@@ -484,65 +484,93 @@ const MatchManager = ({ matches, tournaments, players, refreshData }) => {
                         </div>
 
                         {/* Tiebreak o Supertiebreak según corresponda */}
-                        {isDecisiveSet(index) ? (
-                          // Supertiebreak para set decisivo
+                        {shouldShowTiebreak(index, set) && (
                           <>
-                            <div>
-                              <Label htmlFor={`set${index}P1STB`}>SuperTB J1</Label>
-                              <Input
-                                id={`set${index}P1STB`}
-                                data-testid={`set-${index}-p1-supertiebreak`}
-                                type="number"
-                                min="0"
-                                value={set.supertiebreak_p1 || ''}
-                                onChange={(e) => updateSet(index, 'supertiebreak_p1', e.target.value)}
-                                className="focus-ring"
-                                placeholder="10"
-                              />
-                            </div>
-                            <div>
-                              <Label htmlFor={`set${index}P2STB`}>SuperTB J2</Label>
-                              <Input
-                                id={`set${index}P2STB`}
-                                data-testid={`set-${index}-p2-supertiebreak`}
-                                type="number"
-                                min="0"
-                                value={set.supertiebreak_p2 || ''}
-                                onChange={(e) => updateSet(index, 'supertiebreak_p2', e.target.value)}
-                                className="focus-ring"
-                                placeholder="8"
-                              />
-                            </div>
-                          </>
-                        ) : (
-                          // Tiebreak normal para sets normales
-                          <>
-                            <div>
-                              <Label htmlFor={`set${index}P1TB`}>Tiebreak J1</Label>
-                              <Input
-                                id={`set${index}P1TB`}
-                                data-testid={`set-${index}-p1-tiebreak`}
-                                type="number"
-                                min="0"
-                                value={set.tiebreak_p1 || ''}
-                                onChange={(e) => updateSet(index, 'tiebreak_p1', e.target.value)}
-                                className="focus-ring"
-                                placeholder="7"
-                              />
-                            </div>
-                            <div>
-                              <Label htmlFor={`set${index}P2TB`}>Tiebreak J2</Label>
-                              <Input
-                                id={`set${index}P2TB`}
-                                data-testid={`set-${index}-p2-tiebreak`}
-                                type="number"
-                                min="0"
-                                value={set.tiebreak_p2 || ''}
-                                onChange={(e) => updateSet(index, 'tiebreak_p2', e.target.value)}
-                                className="focus-ring"
-                                placeholder="5"
-                              />
-                            </div>
+                            {isDecisiveSet(index) ? (
+                              // Supertiebreak para set decisivo
+                              <>
+                                <div>
+                                  <Label htmlFor={`set${index}LoserSTB`}>Perdedor SuperTB</Label>
+                                  <Input
+                                    id={`set${index}LoserSTB`}
+                                    data-testid={`set-${index}-loser-supertiebreak`}
+                                    type="number"
+                                    min="0"
+                                    max="9"
+                                    value={
+                                      set.supertiebreak_p1 !== null && set.supertiebreak_p2 !== null
+                                        ? Math.min(set.supertiebreak_p1, set.supertiebreak_p2)
+                                        : ''
+                                    }
+                                    onChange={(e) => {
+                                      const loserPoints = parseInt(e.target.value) || 0;
+                                      const winnerPoints = loserPoints >= 10 ? loserPoints + 2 : 10;
+                                      
+                                      // Determine who won the set to assign points correctly
+                                      const p1Games = parseInt(set.player1_games) || 0;
+                                      const p2Games = parseInt(set.player2_games) || 0;
+                                      
+                                      if (p1Games > p2Games) {
+                                        // Player 1 won the set, so player 1 gets winner points
+                                        updateSet(index, 'supertiebreak_p1', winnerPoints);
+                                        updateSet(index, 'supertiebreak_p2', loserPoints);
+                                      } else {
+                                        // Player 2 won the set, so player 2 gets winner points
+                                        updateSet(index, 'supertiebreak_p1', loserPoints);
+                                        updateSet(index, 'supertiebreak_p2', winnerPoints);
+                                      }
+                                    }}
+                                    className="focus-ring"
+                                    placeholder="Ej: 8 (→10-8)"
+                                  />
+                                </div>
+                                <div className="flex items-center justify-center text-sm text-gray-600">
+                                  <span>Ganador: automático</span>
+                                </div>
+                              </>
+                            ) : (
+                              // Tiebreak normal para sets normales
+                              <>
+                                <div>
+                                  <Label htmlFor={`set${index}LoserTB`}>Perdedor TB</Label>
+                                  <Input
+                                    id={`set${index}LoserTB`}
+                                    data-testid={`set-${index}-loser-tiebreak`}
+                                    type="number"
+                                    min="0"
+                                    max="20"
+                                    value={
+                                      set.tiebreak_p1 !== null && set.tiebreak_p2 !== null
+                                        ? Math.min(set.tiebreak_p1, set.tiebreak_p2)
+                                        : ''
+                                    }
+                                    onChange={(e) => {
+                                      const loserPoints = parseInt(e.target.value) || 0;
+                                      const winnerPoints = loserPoints >= 7 ? loserPoints + 2 : 7;
+                                      
+                                      // Determine who won the set to assign points correctly
+                                      const p1Games = parseInt(set.player1_games) || 0;
+                                      const p2Games = parseInt(set.player2_games) || 0;
+                                      
+                                      if (p1Games > p2Games) {
+                                        // Player 1 won the set, so player 1 gets winner points
+                                        updateSet(index, 'tiebreak_p1', winnerPoints);
+                                        updateSet(index, 'tiebreak_p2', loserPoints);
+                                      } else {
+                                        // Player 2 won the set, so player 2 gets winner points
+                                        updateSet(index, 'tiebreak_p1', loserPoints);
+                                        updateSet(index, 'tiebreak_p2', winnerPoints);
+                                      }
+                                    }}
+                                    className="focus-ring"
+                                    placeholder="Ej: 5 (→7-5)"
+                                  />
+                                </div>
+                                <div className="flex items-center justify-center text-sm text-gray-600">
+                                  <span>Ganador: automático</span>
+                                </div>
+                              </>
+                            )}
                           </>
                         )}
                       </div>
