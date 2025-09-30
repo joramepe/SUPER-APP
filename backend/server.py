@@ -519,9 +519,66 @@ async def get_weeks_at_number_1():
             "percentage": round((total_weeks[player_id] / sum(total_weeks.values()) * 100) if sum(total_weeks.values()) > 0 else 0, 1)
         }
     
+    # Calculate consecutive weeks streaks
+    consecutive_streaks = {}
+    current_streaks = {}
+    
+    for period in weeks_breakdown:
+        leader_id = period["leader_id"]
+        weeks = period["weeks"]
+        
+        # Initialize if not exists
+        if leader_id not in consecutive_streaks:
+            consecutive_streaks[leader_id] = 0
+            current_streaks[leader_id] = 0
+        
+        # Add to current streak
+        current_streaks[leader_id] += weeks
+        
+        # Check if this leader continues from previous period or if it's a new streak
+        if len(weeks_breakdown) > 1:
+            # Find if the previous period was also led by this player
+            current_index = weeks_breakdown.index(period)
+            if current_index > 0:
+                previous_period = weeks_breakdown[current_index - 1]
+                if previous_period["leader_id"] != leader_id:
+                    # New streak starting, reset current
+                    current_streaks[leader_id] = weeks
+            
+        # Update max streak if current is higher
+        if current_streaks[leader_id] > consecutive_streaks[leader_id]:
+            consecutive_streaks[leader_id] = current_streaks[leader_id]
+        
+        # Reset streaks for other players (they lost #1)
+        for other_player_id in current_streaks:
+            if other_player_id != leader_id:
+                current_streaks[other_player_id] = 0
+    
+    # Format consecutive streaks with player names
+    consecutive_streaks_formatted = {}
+    for player in players:
+        player_id = player["id"]
+        consecutive_streaks_formatted[player["name"]] = {
+            "player_id": player_id,
+            "max_consecutive_weeks": consecutive_streaks.get(player_id, 0)
+        }
+    
+    # Find who has the longest streak
+    longest_streak_player = None
+    longest_streak_weeks = 0
+    for player_name, data in consecutive_streaks_formatted.items():
+        if data["max_consecutive_weeks"] > longest_streak_weeks:
+            longest_streak_weeks = data["max_consecutive_weeks"]
+            longest_streak_player = player_name
+
     return {
         "weeks_breakdown": weeks_breakdown,
         "total_weeks": total_weeks_formatted,
+        "consecutive_streaks": consecutive_streaks_formatted,
+        "longest_streak": {
+            "player_name": longest_streak_player,
+            "weeks": longest_streak_weeks
+        },
         "ranking_evolution": ranking_evolution
     }
 
