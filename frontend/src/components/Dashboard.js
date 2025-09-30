@@ -379,9 +379,18 @@ const Dashboard = ({ players, tournaments, matches, refreshData }) => {
 
                     {/* Longest Match */}
                     {records.longest_match && (
-                      <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                      <div 
+                        className="bg-blue-50 rounded-lg p-4 border border-blue-200 cursor-pointer hover:bg-blue-100 transition-colors"
+                        onClick={() => {
+                          const match = matches.find(m => 
+                            m.tournament_id === tournaments.find(t => t.name === records.longest_match.tournament_name)?.id
+                          );
+                          if (match) navigate(`/partido/${match.id}`);
+                        }}
+                      >
                         <h4 className="font-medium text-blue-800 mb-2 flex items-center">
                           ⏰ Partido Más Largo
+                          <span className="ml-2 text-xs">👆 Click para detalles</span>
                         </h4>
                         <div className="text-sm space-y-1">
                           <div className="font-semibold">{records.longest_match.winner_name} venció</div>
