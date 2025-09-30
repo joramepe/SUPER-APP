@@ -316,8 +316,8 @@ const Dashboard = ({ players, tournaments, matches, refreshData }) => {
                               <span className="font-medium">{stats.average_match_duration_minutes || 0}min</span>
                             </div>
                             <div className="flex justify-between text-xs">
-                              <span className="text-gray-600">Sets/partido:</span>
-                              <span className="font-medium">{stats.average_sets_per_match || 0}</span>
+                              <span className="text-gray-600">Tiempo/set:</span>
+                              <span className="font-medium">{stats.average_minutes_per_set || 0}min</span>
                             </div>
                           </div>
                         </div>
