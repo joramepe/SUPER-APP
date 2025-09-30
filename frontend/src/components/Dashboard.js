@@ -19,6 +19,7 @@ const Dashboard = ({ players, tournaments, matches, refreshData }) => {
     if (players.length > 0) {
       setSelectedPlayer(players[0]);
       fetchRanking();
+      fetchRecords();
     }
   }, [players]);
 
