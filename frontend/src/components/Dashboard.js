@@ -336,6 +336,96 @@ const Dashboard = ({ players, tournaments, matches, refreshData }) => {
                     ))}
                   </div>
                 </div>
+
+                {/* Records Section */}
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">🏆 Récords y Momentos Épicos</h3>
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    
+                    {/* Biggest Beatdown */}
+                    {records.biggest_beatdown && (
+                      <div className="bg-red-50 rounded-lg p-4 border border-red-200">
+                        <h4 className="font-medium text-red-800 mb-2 flex items-center">
+                          💥 Mayor Paliza
+                        </h4>
+                        <div className="text-sm space-y-1">
+                          <div className="font-semibold">{records.biggest_beatdown.winner_name}</div>
+                          <div className="text-red-700">{records.biggest_beatdown.tournament_name}</div>
+                          <div>Juegos: {records.biggest_beatdown.winner_games}-{records.biggest_beatdown.loser_games}</div>
+                          <div>Duración: {records.biggest_beatdown.duration_formatted}</div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Longest Match */}
+                    {records.longest_match && (
+                      <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                        <h4 className="font-medium text-blue-800 mb-2 flex items-center">
+                          ⏰ Partido Más Largo
+                        </h4>
+                        <div className="text-sm space-y-1">
+                          <div className="font-semibold">{records.longest_match.winner_name} venció</div>
+                          <div className="text-blue-700">{records.longest_match.tournament_name}</div>
+                          <div>Duración: {records.longest_match.duration_formatted}</div>
+                          <div>Sets: {records.longest_match.sets?.length || 0}</div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Most Epic */}
+                    {records.most_epic && (
+                      <div className="bg-purple-50 rounded-lg p-4 border border-purple-200">
+                        <h4 className="font-medium text-purple-800 mb-2 flex items-center">
+                          🔥 Partido Más Épico
+                        </h4>
+                        <div className="text-sm space-y-1">
+                          <div className="font-semibold">{records.most_epic.winner_name} venció</div>
+                          <div className="text-purple-700">{records.most_epic.tournament_name}</div>
+                          <div>Duración: {records.most_epic.duration_formatted}</div>
+                          <div>Sets: {records.most_epic.sets?.length || 0}</div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Most Tiebreaks */}
+                    {records.most_tiebreaks && (
+                      <div className="bg-orange-50 rounded-lg p-4 border border-orange-200">
+                        <h4 className="font-medium text-orange-800 mb-2 flex items-center">
+                          🎾 Más Tiebreaks
+                        </h4>
+                        <div className="text-sm space-y-1">
+                          <div className="font-semibold">{records.most_tiebreaks.winner_name} venció</div>
+                          <div className="text-orange-700">{records.most_tiebreaks.tournament_name}</div>
+                          <div>Tiebreaks: {records.most_tiebreaks.tiebreaks}</div>
+                          <div>Supertiebreaks: {records.most_tiebreaks.supertiebreaks}</div>
+                        </div>
+                      </div>
+                    )}
+
+                  </div>
+
+                  {/* Favorite Surfaces */}
+                  {records.favorite_surfaces && Object.keys(records.favorite_surfaces).length > 0 && (
+                    <div className="mt-6">
+                      <h4 className="font-medium text-gray-900 mb-3">🏟️ Superficies Favoritas</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {Object.entries(records.favorite_surfaces).map(([playerName, surfaceInfo]) => (
+                          <div key={playerName} className="bg-emerald-50 rounded-lg p-3 border border-emerald-200">
+                            <div className="flex items-center justify-between">
+                              <span className="font-medium text-emerald-800">{playerName}</span>
+                              <div className="text-right">
+                                <div className="font-semibold text-emerald-700">{surfaceInfo.surface}</div>
+                                <div className="text-sm text-emerald-600">
+                                  {surfaceInfo.wins}/{surfaceInfo.total} ({surfaceInfo.percentage}%)
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             ) : (
               <div className="text-center py-8">
