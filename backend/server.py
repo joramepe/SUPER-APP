@@ -84,6 +84,7 @@ class TournamentCreate(BaseModel):
     real_location: str
     fictional_location: str
     tournament_date: date
+    davis_cup_match_number: Optional[int] = None  # 1, 2, or 3 for Davis Cup
 
 class SetResult(BaseModel):
     player1_games: int
