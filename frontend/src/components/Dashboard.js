@@ -427,15 +427,27 @@ const Dashboard = ({ players, tournaments, matches, refreshData }) => {
 
                     {/* Most Tiebreaks */}
                     {records.most_tiebreaks && (
-                      <div className="bg-orange-50 rounded-lg p-4 border border-orange-200">
+                      <div 
+                        className="bg-orange-50 rounded-lg p-4 border border-orange-200 cursor-pointer hover:bg-orange-100 transition-colors"
+                        onClick={() => {
+                          const match = matches.find(m => 
+                            m.tournament_id === tournaments.find(t => t.name === records.most_tiebreaks.tournament_name)?.id
+                          );
+                          if (match) navigate(`/partido/${match.id}`);
+                        }}
+                      >
                         <h4 className="font-medium text-orange-800 mb-2 flex items-center">
                           🎾 Más Tiebreaks
+                          <span className="ml-2 text-xs">👆 Click para detalles</span>
                         </h4>
                         <div className="text-sm space-y-1">
                           <div className="font-semibold">{records.most_tiebreaks.winner_name} venció</div>
                           <div className="text-orange-700">{records.most_tiebreaks.tournament_name}</div>
                           <div>Tiebreaks: {records.most_tiebreaks.tiebreaks}</div>
                           <div>Supertiebreaks: {records.most_tiebreaks.supertiebreaks}</div>
+                          <div className="text-xs text-orange-600">
+                            Total desempates: {records.most_tiebreaks.total_breakers}
+                          </div>
                         </div>
                       </div>
                     )}
