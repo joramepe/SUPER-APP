@@ -8,6 +8,8 @@ import Dashboard from "./components/Dashboard";
 import TournamentManager from "./components/TournamentManager";
 import MatchManager from "./components/MatchManager";
 import PlayerManager from "./components/PlayerManager";
+import SurfaceDetail from "./components/SurfaceDetail";
+import MatchDetail from "./components/MatchDetail";
 import Navigation from "./components/Navigation";
 import { Toaster } from "./components/ui/sonner";
 import { toast } from "sonner";
