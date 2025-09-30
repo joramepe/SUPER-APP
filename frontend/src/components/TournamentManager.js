@@ -241,6 +241,26 @@ const TournamentManager = ({ tournaments, refreshData }) => {
                 />
               </div>
 
+              {/* Davis Cup Special Field */}
+              {formData.category === 'Copa Davis' && (
+                <div>
+                  <Label htmlFor="davisCupMatch">Número de Partido</Label>
+                  <Select
+                    value={formData.davis_cup_match_number?.toString() || ''}
+                    onValueChange={(value) => setFormData({ ...formData, davis_cup_match_number: parseInt(value) })}
+                  >
+                    <SelectTrigger data-testid="davis-cup-match-select">
+                      <SelectValue placeholder="Selecciona partido" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1">Partido 1 (Mejor de 3 sets)</SelectItem>
+                      <SelectItem value="2">Partido 2 (Mejor de 3 sets)</SelectItem>
+                      <SelectItem value="3">Partido 3 - Decisivo (Mejor de 5 sets)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
               <div className="flex gap-3 pt-4">
                 <Button
                   type="submit"
