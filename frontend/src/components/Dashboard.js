@@ -299,10 +299,16 @@ const Dashboard = ({ players, tournaments, matches, refreshData }) => {
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">Estadísticas por Superficie</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {Object.entries(surfaceStats).map(([surface, stats]) => (
-                      <div key={surface} className="bg-gray-50 rounded-lg p-4">
+                      <div 
+                        key={surface} 
+                        className="bg-gray-50 rounded-lg p-4 hover:bg-gray-100 transition-colors cursor-pointer"
+                        onClick={() => navigate(`/superficie/${encodeURIComponent(surface)}`)}
+                        data-testid={`surface-${surface.toLowerCase().replace(' ', '-')}`}
+                      >
                         <div className="flex items-center space-x-2 mb-3">
                           <div className={`w-4 h-4 rounded-full ${getSurfaceColor(surface)}`}></div>
                           <h4 className="font-medium text-gray-900">{surface}</h4>
+                          <div className="text-xs text-gray-500">👆 Click para detalles</div>
                         </div>
                         <div className="space-y-3">
                           <StatBar
