@@ -332,7 +332,7 @@ const MatchManager = ({ matches, tournaments, players, refreshData }) => {
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Basic Information */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div>
                   <Label htmlFor="tournament">Torneo</Label>
                   <Select
@@ -388,6 +388,26 @@ const MatchManager = ({ matches, tournaments, players, refreshData }) => {
                       ))}
                     </SelectContent>
                   </Select>
+                </div>
+
+                <div>
+                  <Label htmlFor="duration">Duración (minutos)</Label>
+                  <Input
+                    id="duration"
+                    data-testid="duration-input"
+                    type="number"
+                    min="1"
+                    value={formData.duration_minutes}
+                    onChange={(e) => setFormData({ ...formData, duration_minutes: e.target.value })}
+                    placeholder="Ej: 105 (1h 45min)"
+                    className="focus-ring"
+                    required
+                  />
+                  <div className="text-xs text-gray-500 mt-1">
+                    {formData.duration_minutes && !isNaN(formData.duration_minutes) && (
+                      `≈ ${Math.floor(formData.duration_minutes / 60)}h ${formData.duration_minutes % 60}min`
+                    )}
+                  </div>
                 </div>
               </div>
 
