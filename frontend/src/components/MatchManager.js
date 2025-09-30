@@ -223,7 +223,6 @@ const MatchManager = ({ matches, tournaments, players, refreshData }) => {
       player1_id: match.player1_id,
       player2_id: match.player2_id,
       winner_id: match.winner_id,
-      match_date: match.match_date,
       sets: match.sets || []
     });
     setIsDialogOpen(true);
