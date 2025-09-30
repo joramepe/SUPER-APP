@@ -460,32 +460,53 @@ const Dashboard = ({ players, tournaments, matches, refreshData }) => {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {tournaments.slice(-6).reverse().map((tournament) => (
-              <div
-                key={tournament.id}
-                data-testid={`tournament-card-${tournament.id}`}
-                className="bg-gradient-to-br from-white to-gray-50 rounded-lg border border-gray-200 p-4 hover:shadow-md transition-shadow"
-              >
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-gray-900 truncate">{tournament.name}</h3>
-                    <p className="text-sm text-gray-500">{tournament.real_location}</p>
+            {tournaments.slice(-6).reverse().map((tournament) => {
+              const tournamentMatches = matches.filter(m => m.tournament_id === tournament.id);
+              
+              return (
+                <div
+                  key={tournament.id}
+                  data-testid={`tournament-card-${tournament.id}`}
+                  className="bg-gradient-to-br from-white to-gray-50 rounded-lg border border-gray-200 p-4 hover:shadow-md transition-shadow cursor-pointer"
+                  onClick={() => {
+                    if (tournamentMatches.length > 0) {
+                      navigate(`/partido/${tournamentMatches[0].id}`);
+                    }
+                  }}
+                >
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-gray-900 truncate">{tournament.name}</h3>
+                      <p className="text-sm text-gray-500">{tournament.real_location}</p>
+                      {tournamentMatches.length > 0 && (
+                        <div className="text-xs text-emerald-600 mt-1">👆 Click para ver resultado</div>
+                      )}
+                    </div>
+                    <Badge className={`${getCategoryColor(tournament.category)} text-white text-xs`}>
+                      {tournament.points}p
+                    </Badge>
                   </div>
-                  <Badge className={`${getCategoryColor(tournament.category)} text-white text-xs`}>
-                    {tournament.points}p
-                  </Badge>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <div className={`w-3 h-3 rounded-full ${getSurfaceColor(tournament.surface)}`}></div>
-                    <span className="text-sm text-gray-600">{tournament.surface}</span>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <div className={`w-3 h-3 rounded-full ${getSurfaceColor(tournament.surface)}`}></div>
+                      <span className="text-sm text-gray-600">{tournament.surface}</span>
+                    </div>
+                    <span className="text-xs text-gray-500">
+                      {new Date(tournament.tournament_date).toLocaleDateString('es-ES')}
+                    </span>
                   </div>
-                  <span className="text-xs text-gray-500">
-                    {new Date(tournament.tournament_date).toLocaleDateString('es-ES')}
-                  </span>
+                  
+                  {/* Show match result preview if exists */}
+                  {tournamentMatches.length > 0 && (
+                    <div className="mt-3 pt-3 border-t border-gray-200">
+                      <div className="text-xs text-gray-600">
+                        Ganador: {getPlayerName(tournamentMatches[0].winner_id)}
+                      </div>
+                    </div>
+                  )}
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </CardContent>
       </Card>
