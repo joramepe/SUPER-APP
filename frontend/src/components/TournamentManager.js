@@ -81,7 +81,8 @@ const TournamentManager = ({ tournaments, refreshData }) => {
       surface: tournament.surface,
       real_location: tournament.real_location,
       fictional_location: tournament.fictional_location,
-      tournament_date: tournament.tournament_date
+      tournament_date: tournament.tournament_date,
+      davis_cup_match_number: tournament.davis_cup_match_number || null
     });
     setIsDialogOpen(true);
   };
