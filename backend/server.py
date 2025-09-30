@@ -610,12 +610,15 @@ async def get_match_records():
     
     records["most_epic"] = format_match_info(most_epic) if most_epic else None
     
-    records["most_tiebreaks"] = {
-        **format_match_info(most_tiebreaks["match"]) if most_tiebreaks else {},
-        "tiebreaks": most_tiebreaks["tiebreaks"] if most_tiebreaks else 0,
-        "supertiebreaks": most_tiebreaks["supertiebreaks"] if most_tiebreaks else 0,
-        "total_breakers": most_tiebreaks["total_breakers"] if most_tiebreaks else 0
-    } if most_tiebreaks else None
+    if most_tiebreaks:
+        records["most_tiebreaks"] = {
+            **format_match_info(most_tiebreaks["match"]),
+            "tiebreaks": most_tiebreaks["tiebreaks"],
+            "supertiebreaks": most_tiebreaks["supertiebreaks"],
+            "total_breakers": most_tiebreaks["total_breakers"]
+        }
+    else:
+        records["most_tiebreaks"] = None
     
     records["favorite_surfaces"] = {}
     for player_id, surface_info in favorite_surfaces.items():
