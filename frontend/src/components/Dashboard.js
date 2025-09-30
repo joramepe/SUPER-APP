@@ -42,6 +42,15 @@ const Dashboard = ({ players, tournaments, matches, refreshData }) => {
     }
   };
 
+  const fetchWeeksAtNumber1 = async () => {
+    try {
+      const response = await axios.get(`${API}/ranking/weeks-at-number-1`);
+      setWeeksAtNumber1(response.data);
+    } catch (error) {
+      console.error('Error fetching weeks at number 1:', error);
+    }
+  };
+
   const fetchRecords = async () => {
     try {
       const response = await axios.get(`${API}/stats/records`);
