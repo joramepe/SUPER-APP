@@ -122,7 +122,7 @@ const MatchManager = ({ matches, tournaments, players, refreshData }) => {
 
   const validateMatch = () => {
     if (!formData.tournament_id || !formData.player1_id || !formData.player2_id || 
-        !formData.winner_id) {
+        !formData.winner_id || !formData.duration_minutes) {
       toast.error('Todos los campos básicos son obligatorios');
       return false;
     }
