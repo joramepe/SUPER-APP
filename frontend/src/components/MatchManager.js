@@ -611,6 +611,11 @@ const MatchManager = ({ matches, tournaments, players, refreshData }) => {
                       </div>
                       <div className="text-sm text-gray-500 mb-3">
                         Registrado: {new Date(match.created_at).toLocaleDateString('es-ES')}
+                        {match.duration_minutes && (
+                          <span className="ml-4">
+                            Duración: {Math.floor(match.duration_minutes / 60)}h {match.duration_minutes % 60}min
+                          </span>
+                        )}
                       </div>
                       
                       {/* Players and Score */}
