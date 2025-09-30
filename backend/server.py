@@ -408,7 +408,7 @@ async def get_surface_stats(player_id: str):
             "total_duration_minutes": total_surface_duration,
             "total_duration_hours": round(total_surface_duration / 60, 2),
             "average_match_duration_minutes": round(total_surface_duration / total_matches) if total_matches > 0 else 0,
-            "average_sets_per_match": round(total_sets_played / total_matches, 2) if total_matches > 0 else 0
+            "average_minutes_per_set": round(total_surface_duration / total_sets_played) if total_sets_played > 0 else 0
         }
     
     return surface_stats
