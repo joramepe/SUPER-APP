@@ -352,15 +352,27 @@ const Dashboard = ({ players, tournaments, matches, refreshData }) => {
                     
                     {/* Biggest Beatdown */}
                     {records.biggest_beatdown && (
-                      <div className="bg-red-50 rounded-lg p-4 border border-red-200">
+                      <div 
+                        className="bg-red-50 rounded-lg p-4 border border-red-200 cursor-pointer hover:bg-red-100 transition-colors"
+                        onClick={() => {
+                          const match = matches.find(m => 
+                            m.tournament_id === tournaments.find(t => t.name === records.biggest_beatdown.tournament_name)?.id
+                          );
+                          if (match) navigate(`/partido/${match.id}`);
+                        }}
+                      >
                         <h4 className="font-medium text-red-800 mb-2 flex items-center">
                           💥 Mayor Paliza
+                          <span className="ml-2 text-xs">👆 Click para detalles</span>
                         </h4>
                         <div className="text-sm space-y-1">
                           <div className="font-semibold">{records.biggest_beatdown.winner_name}</div>
                           <div className="text-red-700">{records.biggest_beatdown.tournament_name}</div>
                           <div>Juegos: {records.biggest_beatdown.winner_games}-{records.biggest_beatdown.loser_games}</div>
                           <div>Duración: {records.biggest_beatdown.duration_formatted}</div>
+                          <div className="text-xs text-red-600">
+                            Diferencia: {records.biggest_beatdown.games_differential} juegos
+                          </div>
                         </div>
                       </div>
                     )}
