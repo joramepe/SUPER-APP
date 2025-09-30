@@ -333,7 +333,14 @@ const TournamentManager = ({ tournaments, refreshData }) => {
                   >
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex-1">
-                        <h3 className="font-semibold text-gray-900 truncate mb-1">{tournament.name}</h3>
+                        <h3 className="font-semibold text-gray-900 truncate mb-1">
+                          {tournament.name}
+                          {tournament.category === 'Copa Davis' && tournament.davis_cup_match_number && (
+                            <span className="text-sm text-gray-600 ml-2">
+                              (Partido {tournament.davis_cup_match_number})
+                            </span>
+                          )}
+                        </h3>
                         <div className="flex items-center space-x-2 mb-2">
                           <Badge className={`${categoryInfo.color} text-white text-xs`}>
                             {tournament.category}
@@ -344,7 +351,9 @@ const TournamentManager = ({ tournaments, refreshData }) => {
                         </div>
                       </div>
                       <div className="text-right">
-                        <div className="text-lg font-bold text-emerald-600">{tournament.points}p</div>
+                        <div className="text-lg font-bold text-emerald-600">
+                          {tournament.category === 'Copa Davis' ? '🏆' : `${tournament.points}p`}
+                        </div>
                         <div className="text-xs text-gray-500">
                           {tournament.is_best_of_five ? 'BO5' : 'BO3'}
                         </div>
