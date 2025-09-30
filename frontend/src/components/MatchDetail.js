@@ -64,12 +64,12 @@ const MatchDetail = ({ players, tournaments, matches }) => {
         </div>
         {set.tiebreak_p1 !== null && set.tiebreak_p2 !== null && (
           <div className="text-sm text-blue-600">
-            TB: {set.tiebreak_p1}-{set.tiebreak_p2}
+            TB: ({Math.min(set.tiebreak_p1, set.tiebreak_p2)})
           </div>
         )}
         {set.supertiebreak_p1 !== null && set.supertiebreak_p2 !== null && (
           <div className="text-sm text-purple-600">
-            STB: {set.supertiebreak_p1}-{set.supertiebreak_p2}
+            STB: [{Math.min(set.supertiebreak_p1, set.supertiebreak_p2)}]
           </div>
         )}
       </div>
