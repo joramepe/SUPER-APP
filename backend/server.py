@@ -340,6 +340,7 @@ async def get_surface_stats(player_id: str):
         
         total_matches = len(surface_matches)
         matches_won = len([m for m in surface_matches if m["winner_id"] == player_id])
+        total_surface_duration = sum([m.get("duration_minutes", 0) for m in surface_matches])
         
         total_sets_won = 0
         total_sets_played = 0
@@ -403,7 +404,11 @@ async def get_surface_stats(player_id: str):
             "tiebreaks_won_percentage": round((total_tiebreaks_won / total_tiebreaks_played * 100) if total_tiebreaks_played > 0 else 0, 2),
             "supertiebreaks_played": total_supertiebreaks_played,
             "supertiebreaks_won": total_supertiebreaks_won,
-            "supertiebreaks_won_percentage": round((total_supertiebreaks_won / total_supertiebreaks_played * 100) if total_supertiebreaks_played > 0 else 0, 2)
+            "supertiebreaks_won_percentage": round((total_supertiebreaks_won / total_supertiebreaks_played * 100) if total_supertiebreaks_played > 0 else 0, 2),
+            "total_duration_minutes": total_surface_duration,
+            "total_duration_hours": round(total_surface_duration / 60, 2),
+            "average_match_duration_minutes": round(total_surface_duration / total_matches) if total_matches > 0 else 0,
+            "average_sets_per_match": round(total_sets_played / total_matches, 2) if total_matches > 0 else 0
         }
     
     return surface_stats
