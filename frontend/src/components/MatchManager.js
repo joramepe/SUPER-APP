@@ -329,7 +329,7 @@ const MatchManager = ({ matches, tournaments, players, refreshData }) => {
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Basic Information */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                   <Label htmlFor="tournament">Torneo</Label>
                   <Select
@@ -347,19 +347,6 @@ const MatchManager = ({ matches, tournaments, players, refreshData }) => {
                       ))}
                     </SelectContent>
                   </Select>
-                </div>
-
-                <div>
-                  <Label htmlFor="matchDate">Fecha del Partido</Label>
-                  <Input
-                    id="matchDate"
-                    data-testid="match-date-input"
-                    type="date"
-                    value={formData.match_date}
-                    onChange={(e) => setFormData({ ...formData, match_date: e.target.value })}
-                    className="focus-ring"
-                    required
-                  />
                 </div>
 
                 <div>
