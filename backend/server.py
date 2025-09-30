@@ -413,6 +413,215 @@ async def get_surface_stats(player_id: str):
     
     return surface_stats
 
+@api_router.get("/stats/records")
+async def get_match_records():
+    # Get all matches and tournaments
+    matches = await db.matches.find().to_list(1000)
+    tournaments = await db.tournaments.find().to_list(1000)
+    players = await db.players.find().to_list(1000)
+    
+    tournament_map = {t["id"]: t for t in tournaments}
+    player_map = {p["id"]: p for p in players}
+    
+    if not matches:
+        return {}
+    
+    records = {}
+    
+    # 1. MAYOR PALIZA - Least games lost, shortest duration, biggest set difference
+    biggest_beatdown = None
+    min_beating_score = float('inf')
+    
+    for match in matches:
+        if not match.get("duration_minutes"):
+            continue
+            
+        # Calculate games differential and dominance
+        winner_games = 0
+        loser_games = 0
+        sets_won = 0
+        sets_lost = 0
+        
+        for set_result in match["sets"]:
+            p1_games = set_result["player1_games"]
+            p2_games = set_result["player2_games"]
+            
+            if p1_games > p2_games:
+                if match["winner_id"] == match["player1_id"]:
+                    winner_games += p1_games
+                    loser_games += p2_games
+                    sets_won += 1
+                else:
+                    winner_games += p2_games
+                    loser_games += p1_games
+                    sets_lost += 1
+            else:
+                if match["winner_id"] == match["player2_id"]:
+                    winner_games += p2_games
+                    loser_games += p1_games
+                    sets_won += 1
+                else:
+                    winner_games += p1_games
+                    loser_games += p2_games
+                    sets_lost += 1
+        
+        # Beatdown score: lower is more dominant (considers games ratio, duration, sets)
+        games_ratio = loser_games / winner_games if winner_games > 0 else 1
+        duration_factor = match["duration_minutes"] / 60  # Convert to hours
+        set_dominance = sets_won / (sets_won + sets_lost) if (sets_won + sets_lost) > 0 else 0
+        
+        beatdown_score = games_ratio * duration_factor * (2 - set_dominance)
+        
+        if beatdown_score < min_beating_score:
+            min_beating_score = beatdown_score
+            biggest_beatdown = {
+                "match": match,
+                "winner_games": winner_games,
+                "loser_games": loser_games,
+                "sets_won": sets_won,
+                "sets_lost": sets_lost,
+                "duration_minutes": match["duration_minutes"]
+            }
+    
+    # 2. PARTIDO MÁS LARGO
+    longest_match = max(matches, key=lambda x: x.get("duration_minutes", 0))
+    
+    # 3. PARTIDO MÁS ÉPICO - Most sets + longest duration combination
+    most_epic = None
+    max_epic_score = 0
+    
+    for match in matches:
+        if not match.get("duration_minutes"):
+            continue
+            
+        sets_count = len(match["sets"])
+        duration_hours = match["duration_minutes"] / 60
+        
+        # Count tiebreaks and supertiebreaks for drama
+        tiebreaks = sum(1 for s in match["sets"] if s.get("tiebreak_p1") is not None)
+        supertiebreaks = sum(1 for s in match["sets"] if s.get("supertiebreak_p1") is not None)
+        
+        # Epic score: more sets, longer duration, more tiebreaks = more epic
+        epic_score = sets_count * duration_hours * (1 + tiebreaks * 0.5 + supertiebreaks * 1)
+        
+        if epic_score > max_epic_score:
+            max_epic_score = epic_score
+            most_epic = match
+    
+    # 4. PARTIDO CON MÁS TIEBREAKS
+    most_tiebreaks = None
+    max_tiebreaks = 0
+    
+    for match in matches:
+        tiebreaks = sum(1 for s in match["sets"] if s.get("tiebreak_p1") is not None)
+        supertiebreaks = sum(1 for s in match["sets"] if s.get("supertiebreak_p1") is not None)
+        total_breakers = tiebreaks + supertiebreaks
+        
+        if total_breakers > max_tiebreaks:
+            max_tiebreaks = total_breakers
+            most_tiebreaks = {
+                "match": match,
+                "tiebreaks": tiebreaks,
+                "supertiebreaks": supertiebreaks,
+                "total_breakers": total_breakers
+            }
+    
+    # 5. SUPERFICIE FAVORITA DE CADA JUGADOR
+    favorite_surfaces = {}
+    
+    for player in players:
+        player_id = player["id"]
+        surface_records = {}
+        
+        # Get tournaments and their surfaces
+        for tournament in tournaments:
+            surface = tournament["surface"]
+            if surface not in surface_records:
+                surface_records[surface] = {"wins": 0, "total": 0}
+        
+        # Count matches per surface
+        player_matches = [m for m in matches if m["player1_id"] == player_id or m["player2_id"] == player_id]
+        
+        for match in player_matches:
+            tournament = tournament_map.get(match["tournament_id"])
+            if tournament:
+                surface = tournament["surface"]
+                if surface not in surface_records:
+                    surface_records[surface] = {"wins": 0, "total": 0}
+                
+                surface_records[surface]["total"] += 1
+                if match["winner_id"] == player_id:
+                    surface_records[surface]["wins"] += 1
+        
+        # Find favorite surface (best win rate with at least 1 match)
+        best_surface = None
+        best_rate = -1
+        
+        for surface, record in surface_records.items():
+            if record["total"] > 0:
+                win_rate = record["wins"] / record["total"]
+                if win_rate > best_rate:
+                    best_rate = win_rate
+                    best_surface = {
+                        "surface": surface,
+                        "wins": record["wins"],
+                        "total": record["total"],
+                        "percentage": round(win_rate * 100, 1)
+                    }
+        
+        if best_surface:
+            favorite_surfaces[player_id] = best_surface
+    
+    # Format results
+    def format_match_info(match_data):
+        if isinstance(match_data, dict) and "match" in match_data:
+            match = match_data["match"]
+        else:
+            match = match_data
+            
+        tournament = tournament_map.get(match["tournament_id"])
+        player1 = player_map.get(match["player1_id"])
+        player2 = player_map.get(match["player2_id"])
+        winner = player_map.get(match["winner_id"])
+        
+        return {
+            "tournament_name": tournament["name"] if tournament else "Unknown",
+            "surface": tournament["surface"] if tournament else "Unknown",
+            "player1_name": player1["name"] if player1 else "Unknown",
+            "player2_name": player2["name"] if player2 else "Unknown",
+            "winner_name": winner["name"] if winner else "Unknown",
+            "duration_minutes": match.get("duration_minutes", 0),
+            "duration_formatted": f"{match.get('duration_minutes', 0) // 60}h {match.get('duration_minutes', 0) % 60}min",
+            "sets": match["sets"],
+            "date": tournament["tournament_date"] if tournament else None
+        }
+    
+    records["biggest_beatdown"] = {
+        **format_match_info(biggest_beatdown["match"]) if biggest_beatdown else {},
+        "winner_games": biggest_beatdown["winner_games"] if biggest_beatdown else 0,
+        "loser_games": biggest_beatdown["loser_games"] if biggest_beatdown else 0,
+        "games_differential": biggest_beatdown["winner_games"] - biggest_beatdown["loser_games"] if biggest_beatdown else 0
+    } if biggest_beatdown else None
+    
+    records["longest_match"] = format_match_info(longest_match) if longest_match else None
+    
+    records["most_epic"] = format_match_info(most_epic) if most_epic else None
+    
+    records["most_tiebreaks"] = {
+        **format_match_info(most_tiebreaks["match"]) if most_tiebreaks else {},
+        "tiebreaks": most_tiebreaks["tiebreaks"] if most_tiebreaks else 0,
+        "supertiebreaks": most_tiebreaks["supertiebreaks"] if most_tiebreaks else 0,
+        "total_breakers": most_tiebreaks["total_breakers"] if most_tiebreaks else 0
+    } if most_tiebreaks else None
+    
+    records["favorite_surfaces"] = {}
+    for player_id, surface_info in favorite_surfaces.items():
+        player = player_map.get(player_id)
+        if player:
+            records["favorite_surfaces"][player["name"]] = surface_info
+    
+    return records
+
 @api_router.get("/stats/tournament-category/{player_id}")
 async def get_tournament_category_stats(player_id: str):
     # Get all matches for player
