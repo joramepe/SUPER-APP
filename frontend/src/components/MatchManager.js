@@ -163,12 +163,23 @@ const MatchManager = ({ matches, tournaments, players, refreshData }) => {
         return false;
       }
 
-      // Check tiebreak logic
-      if ((set.player1_games === 7 && set.player2_games === 6) || 
-          (set.player1_games === 6 && set.player2_games === 7)) {
-        if (set.tiebreak_p1 === null || set.tiebreak_p2 === null) {
-          toast.error(`Set ${i + 1}: Se requiere tiebreak cuando el resultado es 7-6`);
-          return false;
+      // Check tiebreak logic - only required for 7-6 or 6-7
+      const p1Games = set.player1_games || 0;
+      const p2Games = set.player2_games || 0;
+      
+      if ((p1Games === 7 && p2Games === 6) || (p1Games === 6 && p2Games === 7)) {
+        // For decisive sets, check supertiebreak
+        if (isDecisiveSet(i)) {
+          if (set.supertiebreak_p1 === null || set.supertiebreak_p2 === null) {
+            toast.error(`Set ${i + 1}: Se requiere supertiebreak cuando el resultado es 7-6 en set decisivo`);
+            return false;
+          }
+        } else {
+          // For normal sets, check tiebreak
+          if (set.tiebreak_p1 === null || set.tiebreak_p2 === null) {
+            toast.error(`Set ${i + 1}: Se requiere tiebreak cuando el resultado es 7-6`);
+            return false;
+          }
         }
       }
     }
